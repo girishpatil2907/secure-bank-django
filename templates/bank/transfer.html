@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}Transfer Funds{% endblock %}
+
+{% block content %}
+
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 70vh;">
+    <div class="col-lg-5">
+        <div class="card auth-card">
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    <i class="fas fa-exchange-alt fa-3x text-info"></i>
+                    <h2 class="mt-3">Transfer Funds</h2>
+                    <p class="text-muted">Your current balance is ₹{{ account.balance }}</p>
+                </div>
+
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="id_recipient_account_number" class="form-label">Recipient's Account Number</label>
+                        {{ form.recipient_account_number }}
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_amount" class="form-label">Amount (₹)</label>
+                        {{ form.amount }}
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_mpin" class="form-label">Your 4-Digit MPIN</label>
+                        {{ form.mpin }}
+                    </div>
+
+                    {% for message in messages %}
+                        <div class="alert alert-danger mt-3">{{ message }}</div>
+                    {% endfor %}
+                    
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-info btn-lg text-white">Confirm Transfer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

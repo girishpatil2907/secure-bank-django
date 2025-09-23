@@ -1,0 +1,10 @@
+<div class="sub-nav">
+    <a href="{% url 'dashboard' %}" class="sub-nav-item {% if active_page == 'dashboard' %}active{% endif %}"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a>
+    <a href="{% url 'transactions' %}" class="sub-nav-item {% if active_page == 'transactions' %}active{% endif %}"><i class="fas fa-history me-2"></i>Transactions</a>
+    <a href="{% url 'transfer' %}" class="sub-nav-item {% if active_page == 'transfer' %}active{% endif %}"><i class="fas fa-exchange-alt me-2"></i>Transfer</a>
+    <a href="{% url 'apply_loan' %}" class="sub-nav-item {% if active_page == 'apply_loan' %}active{% endif %}"><i class="fas fa-landmark me-2"></i>Loans</a>
+    <a href="{% url 'sip_calculator' %}" class="sub-nav-item {% if active_page == 'sip_calculator' %}active{% endif %}"><i class="fas fa-calculator me-2"></i>SIP Calculator</a>
+    <a href="{% url 'deposit' %}" class="sub-nav-item {% if active_page == 'deposit' %}active{% endif %}"><i class="fas fa-arrow-down me-2"></i>Deposits</a>
+    <a href="{% url 'withdrawal' %}" class="sub-nav-item {% if active_page == 'withdrawal' %}active{% endif %}"><i class="fas fa-arrow-up me-2"></i>Withdrawal</a>
+    <a href="{% url 'pf_deposit' %}" class="sub-nav-item {% if active_page == 'provident_fund' %}active{% endif %}"><i class="fas fa-shield-alt me-2"></i>Provident Fund</a>
+</div>

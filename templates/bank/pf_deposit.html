@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}Deposit to PF Account{% endblock %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="col-lg-5">
+        <div class="card auth-card">
+            <div class="card-body p-lg-5">
+                <div class="text-center mb-4">
+                    <i class="fas fa-shield-alt fa-3x text-primary"></i>
+                    <h2 class="mt-3">Deposit to Provident Fund</h2>
+                    <p class="text-muted">Main Account Balance: ₹{{ main_account_balance }}</p>
+                    <p class="text-muted">Current PF Balance: ₹{{ pf_account.balance }}</p>
+                </div>
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="id_amount" class="form-label">{{ form.amount.label }}</label>
+                        {{ form.amount }}
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_mpin" class="form-label">{{ form.mpin.label }}</label>
+                        {{ form.mpin }}
+                    </div>
+                    {% for message in messages %}
+                        <div class="alert alert-danger mt-3">{{ message }}</div>
+                    {% endfor %}
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg">Confirm Deposit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

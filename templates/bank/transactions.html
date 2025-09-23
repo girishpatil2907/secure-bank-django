@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block title %}Transaction History{% endblock %}
+
+{% block content %}
+    <div class="card dashboard-card mt-4">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="card-title text-primary mb-0">Full Transaction History</h5>
+                <a href="{% url 'download_csv' %}" class="btn btn-outline-primary btn-sm">
+                    <i class="fas fa-download me-2"></i>Download as CSV
+                </a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Date & Time</th>
+                            <th>Description</th>
+                            <th>Type</th>
+                            <th class="text-end">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for transaction in page_obj.object_list %}
+                        <tr>
+                            <td>{{ transaction.timestamp|date:"d M, Y, P" }}</td>
+                            <td>{{ transaction.description }}</td>
+                            <td>
+                                {% if transaction.transaction_type == 'DEPOSIT' %}
+                                    <span class="badge bg-success-soft">Credit</span>
+                                {% elif transaction.transaction_type == 'WITHDRAWAL' %}
+                                    <span class="badge bg-danger-soft">Debit</span>
+                                {% else %}
+                                     <span class="badge bg-warning-soft">Transfer</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end fw-bold {% if transaction.transaction_type == 'DEPOSIT' %}text-success{% else %}text-danger{% endif %}">
+                               {% if transaction.transaction_type == 'DEPOSIT' %}+{% else %}-{% endif %} ₹{{ transaction.amount }}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center p-4">No transactions found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+                    {% endif %}
+                    <li class="page-item disabled"><span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
+                    {% if page_obj.has_next %}
+                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Your Dashboard{% endblock %}
+
+{% block content %}
+    {% for message in messages %}
+        <div class="alert alert-success alert-dismissible fade show my-3" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+
+    <div class="welcome-banner my-4 p-4 rounded-3 text-white">
+        <h1 class="display-6 fw-bold">Welcome back, {{ user.get_full_name|default:user.username }}!</h1>
+        <p class="mb-0">Account Number: {{ account.account_number }}</p>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 col-lg-4">
+            <div class="balance-card card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="text-muted fw-normal">Account Balance</h6>
+                        <i id="toggleBalance" class="fas fa-eye text-muted" style="cursor: pointer;"></i>
+                    </div>
+                    <p class="display-5 fw-bold mt-2 mb-1" id="balanceDisplay" data-balance="{{ account.balance|floatformat:'-2' }}">₹{{ account.balance }}</p>
+                    <small class="text-muted">Account No: {{ account.account_number }}</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4 g-4">
+        <div class="col-md-6 col-lg-3">
+            <a href="{% url 'transfer' %}" class="text-decoration-none">
+                <div class="action-card card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-exchange-alt fa-2x text-primary mb-2"></i>
+                        <p class="fw-bold mb-0">Transfer Money</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <a href="{% url 'deposit' %}" class="text-decoration-none">
+                <div class="action-card card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-arrow-down fa-2x text-success mb-2"></i>
+                        <p class="fw-bold mb-0">Deposit</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-6 col-lg-3">
+             <a href="{% url 'apply_loan' %}" class="text-decoration-none">
+                <div class="action-card card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-landmark fa-2x text-info mb-2"></i>
+                        <p class="fw-bold mb-0">Apply Loan</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <a href="{% url 'sip_calculator' %}" class="text-decoration-none">
+                <div class="action-card card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-calculator fa-2x text-warning mb-2"></i>
+                        <p class="fw-bold mb-0">SIP Calculator</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div class="row mt-4 g-4">
+        <div class="col-lg-6">
+            <div class="card dashboard-card h-100">
+                <div class="card-body">
+                    <h5 class="card-title text-primary mb-3">Provident Fund (PF) Account</h5>
+                    {% if pf_account %}
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="mb-1 text-muted">PF Account Number: {{ pf_account.pf_account_number }}</p>
+                                <p class="h4 fw-bold mb-0">Current PF Balance: ₹{{ pf_account.balance }}</p>
+                            </div>
+                            <a href="{% url 'pf_deposit' %}" class="btn btn-primary">Deposit to PF</a>
+                        </div>
+                    {% else %}
+                        <div class="text-center p-4">
+                            <p>You do not have a Provident Fund account yet.</p>
+                            <a href="{% url 'create_pf' %}" class="btn btn-success">Create Your PF Account Now</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card dashboard-card h-100">
+                <div class="card-body">
+                    <h5 class="card-title text-primary mb-3">My Loan Applications</h5>
+                    <div class="table-responsive">
+                        <table class="table table-sm align-middle mb-0">
+                            <tbody>
+                                {% for loan in loan_applications|slice:":2" %}
+                                <tr>
+                                    <td>{{ loan.get_loan_type_display }} <br> <small class="text-muted">{{ loan.application_date|date:"d M, Y" }}</small></td>
+                                    <td class="text-end">
+                                        ₹{{ loan.amount_required }} <br>
+                                        {% if loan.status == 'APPROVED' %}
+                                            <span class="badge bg-success">Approved</span>
+                                        {% elif loan.status == 'REJECTED' %}
+                                            <span class="badge bg-danger">Rejected</span>
+                                        {% else %}
+                                            <span class="badge bg-warning text-dark">Pending</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="2" class="text-center p-3">You have no recent loan applications.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const toggleBalanceBtn = document.getElementById('toggleBalance');
+        const balanceDisplay = document.getElementById('balanceDisplay');
+        if (toggleBalanceBtn && balanceDisplay) {
+            const originalBalanceValue = balanceDisplay.getAttribute('data-balance');
+            const formattedBalance = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(originalBalanceValue);
+            let isBalanceVisible = true;
+            toggleBalanceBtn.addEventListener('click', () => {
+                isBalanceVisible = !isBalanceVisible;
+                if (isBalanceVisible) {
+                    balanceDisplay.textContent = formattedBalance;
+                    toggleBalanceBtn.classList.remove('fa-eye-slash');
+                    toggleBalanceBtn.classList.add('fa-eye');
+                } else {
+                    balanceDisplay.textContent = '₹ ******';
+                    toggleBalanceBtn.classList.remove('fa-eye');
+                    toggleBalanceBtn.classList.add('fa-eye-slash');
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}
