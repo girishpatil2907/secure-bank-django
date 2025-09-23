@@ -96,9 +96,9 @@ LOGOUT_REDIRECT_URL = 'home'
 
 # Email Configuration (loads from environment variables on Render)
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'girishpatil2908@gmail.com'
+EMAIL_HOST = 'girish2908@gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'girishpatil2908@gmail.com'
+EMAIL_HOST_USER = 'girishpatil2908@gmail.com'  
 EMAIL_HOST_PASSWORD = 'sxpw mowa znnj nucz'
 DEFAULT_FROM_EMAIL = 'Secure Bank <noreply@securebank.com>'
