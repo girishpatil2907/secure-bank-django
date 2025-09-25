@@ -14,10 +14,10 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'a-default-secret-key-for-local-develo
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
 # Add the Render app URL to the allowed hosts.
-ALLOWED_HOSTS = ['127.0.0.1']
-RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
-if RENDER_EXTERNAL_HOSTNAME:
-    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+ALLOWED_HOSTS = ['secure-bank-django-p278.onrender.com']
+
+CSRF_TRUSTED_ORIGINS = ['https://secure-bank-django-p278.onrender.com']
+
 
 # Application definition
 INSTALLED_APPS = [
