@@ -91,10 +91,22 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# settings.py
+
+# ==============================================================================
+# EMAIL CONFIGURATION (Using SendGrid)
+# ==============================================================================
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST = 'smtp.sendgrid.net'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
-DEFAULT_FROM_EMAIL = 'Secure Bank <noreply@securebank.com>'
+
+# SendGrid ke liye, username hamesha 'apikey' hi hota hai (ise change na karein).
+EMAIL_HOST_USER = 'apikey' 
+
+# Password aapki SendGrid API Key hai, jo hum environment variable se lenge.
+EMAIL_HOST_PASSWORD = os.environ.get('SENDGRID_API_KEY') 
+
+# Yahan woh email address daalein jo aapne SendGrid par verify kiya hai.
+DEFAULT_FROM_EMAIL = 'Secure Bank <girishpatil2907@gmail.com>'
