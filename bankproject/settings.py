@@ -8,7 +8,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-your-default-local-secret-key')
 
-DEBUG = True
+# YEH SAHI HAI
+DEBUG = os.environ.get('RENDER') is None
 
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 if RENDER_EXTERNAL_HOSTNAME:
@@ -109,4 +110,4 @@ EMAIL_HOST_USER = 'apikey'
 EMAIL_HOST_PASSWORD = os.environ.get('SENDGRID_API_KEY') 
 
 # Yahan woh email address daalein jo aapne SendGrid par verify kiya hai.
-DEFAULT_FROM_EMAIL = 'Secure Bank <girishpatil2907@gmail.com>'
+DEFAULT_FROM_EMAIL = 'Secure Bank <girishpatil2908@gmail.com>'
