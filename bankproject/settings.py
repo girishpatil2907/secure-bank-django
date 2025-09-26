@@ -1,32 +1,29 @@
+# bankproject/settings.py
+
 from pathlib import Path
 import os
 import dj_database_url
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECURITY WARNING: keep the secret key used in production secret!
-# We will get the secret key from an environment variable on Render.
-SECRET_KEY = os.environ.get('SECRET_KEY', 'a-default-secret-key-for-local-development')
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-your-default-local-secret-key')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-# Debug will be False on Render and True on your local machine.
-DEBUG = os.environ.get('DEBUG', 'True') == 'True'
+DEBUG = os.environ.get('RENDER') is None
 
-# Add the Render app URL to the allowed hosts.
-ALLOWED_HOSTS = ['secure-bank-django-p278.onrender.com']
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS = [RENDER_EXTERNAL_HOSTNAME]
+    CSRF_TRUSTED_ORIGINS = [f'https://{RENDER_EXTERNAL_HOSTNAME}']
+else:
+    ALLOWED_HOSTS = []
 
-CSRF_TRUSTED_ORIGINS = ['https://secure-bank-django-p278.onrender.com']
-
-
-# Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'whitenoise.runserver_nostatic', # For Whitenoise
+    'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
     'accounts',
     'bank',
@@ -34,7 +31,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware', # For Whitenoise
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -63,53 +60,42 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'bankproject.wsgi.application'
 
-# Database
-# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-import dj_database_url
-import os
+DATABASES = {
+    'default': dj_database_url.config(
+        default=f'sqlite:///{BASE_DIR / "db.sqlite3"}',
+        conn_max_age=600,
+        ssl_require=os.environ.get('RENDER') is not None
+    )
+}
 
-# Check if running on Render (Render provides DATABASE_URL in env)
-if os.getenv('DATABASE_URL'):
-    DATABASES = {
-        'default': dj_database_url.config(conn_max_age=600)
-    }
-else:
-    # Local dev: Use SQLite
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / "db.sqlite3",
-        }
-    }
+AUTH_PASSWORD_VALIDATORS = [
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
+]
 
+LOGIN_REDIRECT_URL = 'dashboard'
+LOGOUT_REDIRECT_URL = 'home'
+LOGIN_URL = 'login'
 
-# Password validation
-# ... (AUTH_PASSWORD_VALIDATORS remains the same) ...
+LANGUAGE_CODE = 'en-us'
+TIME_ZONE = 'UTC'
+USE_I1N = True
+USE_TZ = True
 
-# Internationalization
-# ... (LANGUAGE_CODE, TIME_ZONE, etc. remain the same) ...
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.0/howto/static-files/
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [BASE_DIR / 'static']
 if not DEBUG:
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-STATICFILES_DIRS = [BASE_DIR / 'static']
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LOGIN_REDIRECT_URL = 'dashboard'
-LOGOUT_REDIRECT_URL = 'home'
-
-# Email Configuration (loads from environment variables on Render)
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'girish2908@gmail.com'
+EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'girishpatil2908@gmail.com'  
-EMAIL_HOST_PASSWORD = 'sxpw mowa znnj nucz'
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = 'Secure Bank <noreply@securebank.com>'
