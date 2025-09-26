@@ -13,4 +13,5 @@ urlpatterns = [
     path('pf-deposit/', views.pf_deposit_view, name='pf_deposit'),
     path('create-pf-account/', views.create_pf_account_view, name='create_pf_account'),
     path('download-csv/', views.download_transactions_csv, name='download_csv'),
+    path('sip-calculator/', views.sip_calculator_view, name='sip_calculator'),
 ]
