@@ -189,7 +189,10 @@ def pf_deposit_view(request):
         messages.error(request, 'You do not have a PF account. Please create one first.')
         return redirect('dashboard')
     
-    # bank/views.py
+
+def sip_calculator_view(request):
+    context = {'active_page': 'sip_calculator'}
+    return render(request, 'bank/sip_calculator.html', context)
 
 @login_required
 def download_transactions_csv(request):
