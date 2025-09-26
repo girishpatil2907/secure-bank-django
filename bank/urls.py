@@ -1,9 +1,12 @@
+# bank/urls.py
 
 from django.urls import path
 from . import views
+from accounts.views import home # Home view ko accounts app se import karein
 
 urlpatterns = [
-    path('', views.dashboard, name='home'),
+    # Root URL ab 'accounts.views.home' handle karega
+    path('', home, name='home'), 
     path('dashboard/', views.dashboard, name='dashboard'),
     path('transactions/', views.transaction_history_view, name='transactions'),
     path('deposit/', views.deposit_view, name='deposit'),

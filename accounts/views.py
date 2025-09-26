@@ -1,3 +1,5 @@
+# accounts/views.py
+
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from django.contrib.auth.models import User
@@ -9,6 +11,7 @@ from datetime import timedelta
 import random
 from .forms import SignUpForm
 from .models import UserProfile
+from bank.models import Account # Account model ko bank app se import karna zaroori hai
 from django.contrib import messages
 
 def home(request):
@@ -29,7 +32,6 @@ def signup(request):
             mpin = form.cleaned_data['mpin']
             hashed_mpin = make_password(mpin)
             
-            # Update or create UserProfile
             profile, created = UserProfile.objects.update_or_create(
                 user=user,
                 defaults={
@@ -38,16 +40,19 @@ def signup(request):
                     'otp_created_at': timezone.now()
                 }
             )
+            # Signup par Account create karein
+            if not Account.objects.filter(user=user).exists():
+                Account.objects.create(user=user)
 
             subject = 'Verify your Secure Bank Account'
-            message = f'Hello {user.first_name},\n\nYour OTP to verify your account is: {otp_code}\n\nThis OTP is valid for 10 minutes.\n\nThank you,\nSecure Bank Team'
+            message = f'Hello {user.first_name},\n\nYour OTP to verify your account is: {otp_code}'
             
             try:
                 send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
                 messages.success(request, 'A verification OTP has been sent to your email.')
                 return redirect('verify_otp', username=user.username)
             except Exception as e:
-                messages.error(request, 'Failed to send verification email. Please check your settings.')
+                messages.error(request, 'Failed to send verification email.')
                 user.delete() # Agar email fail ho toh user delete kar dein
     else:
         form = SignUpForm()
@@ -55,15 +60,14 @@ def signup(request):
 
 def verify_otp(request, username):
     try:
-        user = User.objects.get(username=username)
+        user = User.objects.get(username=username, is_active=False)
         profile = UserProfile.objects.get(user=user)
     except (User.DoesNotExist, UserProfile.DoesNotExist):
-        messages.error(request, 'User not found. Please sign up again.')
+        messages.error(request, 'User not found or already verified. Please sign up or log in.')
         return redirect('signup')
 
     if request.method == 'POST':
         entered_otp = request.POST.get('otp')
-        
         time_limit = profile.otp_created_at + timedelta(minutes=10)
 
         if profile.otp == entered_otp and timezone.now() < time_limit:
@@ -79,4 +83,4 @@ def verify_otp(request, username):
         else:
             messages.error(request, 'Invalid or expired OTP. Please try again.')
             
-    return render(request, 'accounts/verify_otp.html', {'username': username})
+    return render(request, 'verify_otp.html', {'username': username})

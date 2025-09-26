@@ -1,11 +1,12 @@
+# bankproject/urls.py
+
 from django.contrib import admin
 from django.urls import path, include
-from accounts import views as accounts_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', accounts_views.home, name='home'),
+    # 'accounts' se judi saari URLs yahan se handle hongi
     path('accounts/', include('accounts.urls')),
-    # Hum 'bank' app ke URLs ko bhi yahan jod rahe hain
+    # Baaki saari URLs (home, dashboard, etc.) yahan se handle hongi
     path('', include('bank.urls')),
 ]
