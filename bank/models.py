@@ -7,6 +7,10 @@ import random
 def generate_account_number():
     return ''.join([str(random.randint(0, 9)) for _ in range(10)])
 
+def generate_pf_account_number():
+    return f'PF{generate_account_number()}'
+
+
 class Account(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='account')
     account_number = models.CharField(max_length=10, unique=True, default=generate_account_number)
@@ -30,7 +34,6 @@ class Transaction(models.Model):
 
     def __str__(self):
         return f'{self.transaction_type} of {self.amount} for {self.account.user.username}'
-# bank/models.py
 
 class LoanApplication(models.Model):
     LOAN_TYPES = (
@@ -49,14 +52,15 @@ class LoanApplication(models.Model):
     monthly_income = models.DecimalField(max_digits=12, decimal_places=2)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
     application_date = models.DateTimeField(auto_now_add=True)
-    is_disbursed = models.BooleanField(default=False) # <-- YEH NAYI LINE ADD KAREIN
+    is_disbursed = models.BooleanField(default=False)
 
     def __str__(self):
         return f'Loan for {self.user.username} - {self.status}'
-    
+
 class PFAccount(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='pf_account')
-    pf_account_number = models.CharField(max_length=12, unique=True, default=lambda: f'PF{generate_account_number()}')
+    # LAMBDA KO IS NAYE FUNCTION SE BADLEIN
+    pf_account_number = models.CharField(max_length=12, unique=True, default=generate_pf_account_number)
     balance = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
     created_at = models.DateTimeField(auto_now_add=True)
 
